@@ -1,3 +1,4 @@
+import sys
 import pytrec_eval
 import json
 import csv 
@@ -26,7 +27,7 @@ def load_result(file_path):
     """
     result = {}
     with open(file_path, mode='r', newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
+        reader = csv.reader(csvfile, delimiter='\t')
         for row in reader:
             outer_key = row[0]
             inner_key = row[1]
@@ -37,11 +38,12 @@ def load_result(file_path):
     return result
 
 def main():
-    qrel = load_qrel('../data/scifact/qrels/test.tsv')
-    result = load_result('../data/scifact/result.csv') 
+    args = sys.argv[1:]
+    qrel = load_qrel('../data/'+args[0]+'/qrels/test.tsv')
+    result = load_result('../data/'+args[0]+'/result.tsv') 
 
     evaluator = pytrec_eval.RelevanceEvaluator(
-        qrel, {'map', 'ndcg', 'recall', 'p'})
+        qrel, {'map', 'ndcg', 'recall', 'P'})
 
     evaluation_result = evaluator.evaluate(result)
 

@@ -137,11 +137,14 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult>{
 }
 
 fn main() -> () {
+    let args: Vec<String> = env::args().collect();
     let current_dir = env::current_dir().expect("Failed to get current directory");
-    let corpus_path = current_dir.join(Path::new("../data/scifact/corpus.jsonl"));
-    let queries_path = current_dir.join(Path::new("../data/scifact/queries.jsonl"));
-    let result_path = current_dir.join(Path::new("../data/scifact/result.tsv"));
-    let corpus = load_jsonl_corpus(corpus_path.as_path()).expect("Failed to load corpus at {}");
+    let dataset_path = current_dir.join(Path::new("../data")); 
+    let dataset_path = dataset_path.join(Path::new(&args[1])); 
+    let corpus_path = dataset_path.join(Path::new("corpus.jsonl"));
+    let queries_path = dataset_path.join(Path::new("queries.jsonl"));
+    let result_path = dataset_path.join(Path::new("result.tsv"));
+    let corpus = load_jsonl_corpus(corpus_path.as_path()).expect(&format!("Failed to load corpus at {}", corpus_path.to_str().unwrap()));
     let queries = load_jsonl_queries(queries_path.as_path()).expect("Failed to load queries");
 
     let mut schema_builder = Schema::builder();
