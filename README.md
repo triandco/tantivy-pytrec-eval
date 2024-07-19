@@ -1,19 +1,22 @@
 # Introduction
-This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy) retrieval quality using standard metrics such as ndcg@10, map@10, precision@10, and recall@10 with [python implementation of trec_eval](https://github.com/cvangysel/pytrec_eval). Index and retrieval task is performed by Tantivy. Retrieval result is exported as tsv file which is then loaded pytrec_eval for evaluation.
+This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy) retrieval quality using standard metrics such as ndcg@10, map@10, precision@10, and recall@10.
 
-This project is based on [Beir](https://github.com/beir-cellar/beir). 
+This project is based on [Beir](https://github.com/beir-cellar/beir). Index and retrieval task is performed by Tantivy. Retrieval result is exported as tsv file which is then scored with [pytrec_eval](https://github.com/cvangysel/pytrec_eval).
 
-We use the same datasets available at [Beir](https://github.com/beir-cellar/beir) and compare tantivy results against that which has been published on [BEIR leaderboard](https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475).
+Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
-# Result
+# Result thus far
 | Dataset | ndcg@10 |
 |-|-|
 | Scifact | 0.6251573122952132 |
 | NFCorpus | 0.20505084876906404 |
+| TREC-COVID | 0.0362915780899568 |
+
+[BEIR leaderboard](https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475).
 
 
 # Prerequiste
-This project is built in a linux container as [pytrec_eval is not playing nice with pip on windows](https://github.com/cvangysel/pytrec_eval/issues/32). If you prefer to run it on your local environment, make sure you have:
+This project is built in a linux container as [pytrec_eval is not playing nicely with pip on windows](https://github.com/cvangysel/pytrec_eval/issues/32). If you prefer to run it on your local environment, make sure you have:
 * Python 3.9
 * cargo lastest
 
@@ -47,5 +50,5 @@ pip install -r requirement.txt
 ```
 1. Run the evaluation script. For instance, we are running it for the scifact corpus
 ```sh
-python main.py ../data/scifact
+python main.py scifact
 ```
