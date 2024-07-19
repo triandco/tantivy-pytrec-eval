@@ -41,9 +41,11 @@ def main():
     result = load_result('../data/scifact/result.csv') 
 
     evaluator = pytrec_eval.RelevanceEvaluator(
-        qrel, {'map', 'ndcg'})
+        qrel, {'map', 'ndcg', 'recall', 'p'})
 
     evaluation_result = evaluator.evaluate(result)
+
+    # calculate average map and ndcg across all queries
     summation = {}
     for (run_id, measures) in evaluation_result.items():
         for (measurement, score) in measures.items():
@@ -54,6 +56,7 @@ def main():
     for (measurement, total) in summation.items():
         if measurement not in average: average[measurement] = total / len(evaluation_result)
 
+    # print average score for each measurement
     print(json.dumps(average, indent=1))
 
 if __name__ == '__main__':

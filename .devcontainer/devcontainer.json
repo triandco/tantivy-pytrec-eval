@@ -26,6 +26,9 @@
         "ghcr.io/devcontainers/features/rust:1": {
             "version": "latest",
             "profile": "minimal"
+        },
+        "ghcr.io/devcontainers/features/python:1":{
+            "version": "3.9"
         }
     },
     "remoteUser": "dev",
