@@ -1,5 +1,5 @@
 # Introduction
-This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy) retrieval quality using standard metrics such as ndcg@10, map@10, precision@10, and recall@10.
+This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy) retrieval quality using standard ndcg@10 metric.
 
 This project is based on [Beir](https://github.com/beir-cellar/beir). Index and retrieval task is performed by Tantivy. Retrieval result is exported as tsv file which is then scored with [pytrec_eval](https://github.com/cvangysel/pytrec_eval).
 
