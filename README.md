@@ -6,11 +6,11 @@ This project is based on [Beir](https://github.com/beir-cellar/beir). Index and 
 Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
 # Result thus far
-| Dataset | ndcg@10 |
-|-|-|
-| Scifact | 0.6251573122952132 |
-| NFCorpus | 0.20505084876906404 |
-| TREC-COVID | 0.0362915780899568 |
+| Dataset | tantivy ndcg@10 | Beir BM25flat ndcg@10|
+|-|-|-|
+| Scifact | 0.6251573122952132 | 0.679 |
+| NFCorpus | 0.20505084876906404 | 0.322 | 
+| TREC-COVID | 0.0362915780899568 | 0.595 |
 
 [BEIR leaderboard](https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475).
 
