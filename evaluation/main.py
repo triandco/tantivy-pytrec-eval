@@ -40,7 +40,7 @@ def load_result(file_path):
 def main():
     args = sys.argv[1:]
     qrel = load_qrel('../data/'+args[0]+'/qrels/test.tsv')
-    result = load_result('../data/'+args[0]+'/result.tsv') 
+    result = load_result('../data/'+args[0]+'/result_'+args[1]+'.tsv') 
 
     evaluator = pytrec_eval.RelevanceEvaluator(
         qrel, {'map', 'ndcg', 'recall', 'P'})

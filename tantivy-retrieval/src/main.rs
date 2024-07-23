@@ -9,7 +9,10 @@ use std::{
     path::Path,
 };
 use tantivy::{
-    collector::TopDocs, query::QueryParser, schema::{Schema, Value, STORED, TEXT}, Index, ReloadPolicy, TantivyDocument
+    collector::TopDocs,
+    query::QueryParser,
+    schema::{Schema, Value, STORED, TEXT},
+    Index, ReloadPolicy, TantivyDocument,
 };
 use types::{Corpus, CorpusItem, Query, RetrievalResult};
 
@@ -51,7 +54,7 @@ fn write_result_tsv(path: &Path, result: Vec<RetrievalResult>) {
     fs::write(path, tsv_string).expect("Failed to write result to file")
 }
 
-fn index_corpus(tantivy_index: &Index, corpus: Corpus){
+fn index_corpus(tantivy_index: &Index, corpus: Corpus) {
     let mut index_writer = tantivy_index
         .writer(50_000_000)
         .expect("Create index writer failed");
@@ -80,11 +83,16 @@ fn index_corpus(tantivy_index: &Index, corpus: Corpus){
 /// Remove special characters in queries
 /// https://x.com/fulmicoton/status/1810589778825613442
 fn santise_query(query: String) -> String {
-    let special_characters = vec!['+', '-', '!','(',')','{','}','[',']','^','"','~','*','?',':','\\','<'];
-    query.chars().filter(|x| !special_characters.contains(x)).collect()
+    let special_characters = vec![
+        '+', '-', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', '<',
+    ];
+    query
+        .chars()
+        .filter(|x| !special_characters.contains(x))
+        .collect()
 }
 
-fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult>{
+fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult> {
     let reader = tantivy_index
         .reader_builder()
         .reload_policy(ReloadPolicy::OnCommitWithDelay)
@@ -95,15 +103,12 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult>{
     let schema = tantivy_index.schema();
     let query_parser = QueryParser::for_index(
         &tantivy_index,
-        vec![
-            schema
+        vec![schema
             .get_field("content")
             .expect("Get content field failed")],
     );
 
-    let id_field = schema
-        .get_field("id")
-        .expect("Fail to get content field");
+    let id_field = schema.get_field("id").expect("Fail to get content field");
 
     queries
         .into_iter()
@@ -139,12 +144,15 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult>{
 fn main() -> () {
     let args: Vec<String> = env::args().collect();
     let current_dir = env::current_dir().expect("Failed to get current directory");
-    let dataset_path = current_dir.join(Path::new("../data")); 
-    let dataset_path = dataset_path.join(Path::new(&args[1])); 
+    let dataset_path = current_dir.join(Path::new("../data"));
+    let dataset_path = dataset_path.join(Path::new(&args[1]));
     let corpus_path = dataset_path.join(Path::new("corpus.jsonl"));
     let queries_path = dataset_path.join(Path::new("queries.jsonl"));
-    let result_path = dataset_path.join(Path::new("result.tsv"));
-    let corpus = load_jsonl_corpus(corpus_path.as_path()).expect(&format!("Failed to load corpus at {}", corpus_path.to_str().unwrap()));
+    let result_path = dataset_path.join(Path::new("result_tantivy.tsv"));
+    let corpus = load_jsonl_corpus(corpus_path.as_path()).expect(&format!(
+        "Failed to load corpus at {}",
+        corpus_path.to_str().unwrap()
+    ));
     let queries = load_jsonl_queries(queries_path.as_path()).expect("Failed to load queries");
 
     let mut schema_builder = Schema::builder();
@@ -155,6 +163,7 @@ fn main() -> () {
         tantivy::Index::create_from_tempdir(schema.clone()).expect("Create index failed");
 
     index_corpus(&tantivy_index, corpus);
+
     let retrieval_result = retrieve(&tantivy_index, queries);
 
     write_result_tsv(&result_path, retrieval_result)

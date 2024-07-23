@@ -22,9 +22,9 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
-    implementation("org.apache.lucene:lucene-core:8.11.1")
+    implementation("org.apache.lucene:lucene-core:9.11.1")
     implementation("org.apache.lucene:lucene-analyzers-common:8.11.1")
-    implementation("org.apache.lucene:lucene-queryparser:8.11.1")
+    implementation("org.apache.lucene:lucene-queryparser:9.11.1")
 }
 
 
