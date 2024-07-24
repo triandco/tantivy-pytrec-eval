@@ -5,13 +5,13 @@ This project is based on [Beir](https://github.com/beir-cellar/beir). Index and 
 
 For all candidate, we use the default settings for Tokenisation and BM25 settings. We use the default QueryParser for both Lucene and Tantivy which require query sanitisation since queries in multiple dataset contains special characters. Our sanitisation method was the removal of special character for each implementation. Meanwhile, for ElasticSearch, we use non-sanitised query string with a "type='best_field'" settings.
 
-Retrieval results are exported as tsv file which are then scored with [pytrec_eval](https://github.com/cvangysel/pytrec_eval). This approach allows us to manually examine search output and ensure both Tantivy's and Lucene's performance is scored by the same code base.
+Retrieval results are exported as tsv file which are then scored with [pytrec_eval](https://github.com/cvangysel/pytrec_eval). This approach allows us to manually examine search output and ensure each engine's performance is scored by the same code base.
 
 Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
 # Results
 | Dataset | Tantivy ndcg@10 | Apache Lucene ndcg@10 | [Beir BM25 Flat ndcg@10]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search |
-| - | - | - | - |
+| - | - | - | - | - |
 | Scifact | 0.6110550406527024 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
 | NFCorpus | 0.20174488628325865 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
 | TREC-COVID | 0.03640657024103224 | 0.03705072222267741 | 0.595 | 0.05433894833185797 |
@@ -52,7 +52,7 @@ cd lucene-retrieval
 2. Result of the run will be added to the dataset folder with the name ``result_lucene.tsv``
 
 ## 4. Running elastic search retrieval task
-1. Download and install elastic search for your platform in
+1. [Download and install self-managed version of elastic search for your platform](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
 2. Update elastic search connection details in main.py
 3. Setup environment
 ```sh
@@ -66,7 +66,7 @@ pip install -r requirement.txt
 python3 main.py scifact
 ```
 
-## 4. Running evaluation
+## 5. Running evaluation
 1. Run the following step to create virtualenv for python and install the necessary packages
 ```sh
 cd evaluation
