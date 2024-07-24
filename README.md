@@ -12,10 +12,10 @@ Evaluation datasets are available on [Beir github](https://github.com/beir-cella
 # Results
 | Dataset | Tantivy ndcg@10 | Apache Lucene ndcg@10 | [Beir BM25 Flat ndcg@10]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search |
 | - | - | - | - |
-| Scifact | 0.6251573122952132 | 0.632431156289918 | 0.679 | 0.6563018879997284 |
-| NFCorpus | 0.20505084876906404 | 0.20712280950112716 | 0.322 | 0.2116375800036891 |
-| TREC-COVID | 0.0362915780899568 | 0.035369826134136535 | 0.595 | 0.05433894833185797 |
-| NQ | 0.2637953053727399 | 0.2803606345656689 | 0.306 | 0.310128528137924 |
+| Scifact | 0.6110550406527024 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
+| NFCorpus | 0.20174488628325865 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
+| TREC-COVID | 0.03640657024103224 | 0.03705072222267741 | 0.595 | 0.05433894833185797 |
+| NQ | 0.30181710921729077 | 0.301753090384626 | 0.306 | 0.310128528137924 |
 
 # Running evaluation
 ## 1. Prerequiste
@@ -50,6 +50,21 @@ cd lucene-retrieval
 ./gralew run --args="scifact"
 ```
 2. Result of the run will be added to the dataset folder with the name ``result_lucene.tsv``
+
+## 4. Running elastic search retrieval task
+1. Download and install elastic search for your platform in
+2. Update elastic search connection details in main.py
+3. Setup environment
+```sh
+cd elasticsearch-retrieval
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirement.txt
+```
+4. Run the evaluation task. For instance, we are evaluate tantivy performance on the scifact corpus
+```ssh
+python3 main.py scifact
+```
 
 ## 4. Running evaluation
 1. Run the following step to create virtualenv for python and install the necessary packages

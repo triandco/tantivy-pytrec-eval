@@ -62,15 +62,18 @@ fn index_corpus(tantivy_index: &Index, corpus: Corpus) {
     let schema = tantivy_index.schema();
 
     for corpus_item in corpus.items.into_iter() {
-        let id_field = schema.get_field("id").expect("Failed to get title field");
-        let content_field = schema
-            .get_field("content")
-            .expect("Failed to get content field");
-        let content = corpus_item.title.clone() + &corpus_item.text;
+        let id_field = schema.get_field("id").expect("Failed to get id field");
+        let title_field = schema
+            .get_field("title")
+            .expect("Failed to get title field");
+        let text_field = schema
+            .get_field("text")
+            .expect("Failed to get text field");
 
         let mut document = TantivyDocument::default();
         document.add_text(id_field, &corpus_item.id);
-        document.add_text(content_field, content);
+        document.add_text(title_field, &corpus_item.title);
+        document.add_text(text_field, &corpus_item.text);
 
         index_writer
             .add_document(document)
@@ -104,11 +107,14 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult> 
     let query_parser = QueryParser::for_index(
         &tantivy_index,
         vec![schema
-            .get_field("content")
-            .expect("Get content field failed")],
+            .get_field("title")
+            .expect("Get title field failed"),
+            schema
+            .get_field("text")
+            .expect("Get text field failed")],
     );
 
-    let id_field = schema.get_field("id").expect("Fail to get content field");
+    let id_field = schema.get_field("id").expect("Fail to get id field");
 
     queries
         .into_iter()
@@ -157,7 +163,8 @@ fn main() -> () {
 
     let mut schema_builder = Schema::builder();
     schema_builder.add_text_field("id", TEXT | STORED);
-    schema_builder.add_text_field("content", TEXT);
+    schema_builder.add_text_field("title", TEXT);
+    schema_builder.add_text_field("text", TEXT);
     let schema = schema_builder.build();
     let tantivy_index =
         tantivy::Index::create_from_tempdir(schema.clone()).expect("Create index failed");

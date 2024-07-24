@@ -21,6 +21,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Sort;
@@ -62,7 +63,8 @@ public class App {
         }
     }
 
-    public static String CONTENT_FIELD = "content";
+    public static String TEXT_FIELD = "text";
+    public static String TITLE_FIELD = "content";
     public static String ID_FIELD = "id";
 
 
@@ -72,9 +74,11 @@ public class App {
         try (IndexWriter writer = new IndexWriter(dir, iwc)) {
             for (CorpusItem corpusItem : corpus) {
                 Document doc = new Document();
-                TextField contentField = new TextField(CONTENT_FIELD, corpusItem.Title + " " + corpusItem.Text, Store.NO);
+                TextField titleField = new TextField(TEXT_FIELD, corpusItem.Title, Store.NO);
+                TextField contentField = new TextField(TITLE_FIELD,corpusItem.Text, Store.NO);
                 KeywordField idField = new KeywordField(ID_FIELD, corpusItem.Id, Store.YES);
                 doc.add(contentField);
+                doc.add(titleField);
                 doc.add(idField);
                 writer.addDocument(doc);
             }
@@ -91,7 +95,7 @@ public class App {
             var searcher = new IndexSearcher(reader);
             var analyzer = new StandardAnalyzer();
             var storedField = searcher.storedFields();
-            var parser = new QueryParser(CONTENT_FIELD, analyzer);
+            var parser = new MultiFieldQueryParser(new String[]{TITLE_FIELD, TEXT_FIELD}, analyzer);
             for (var q: queries){
                 try {
                     var sanitisedQuery = SanitiseQuery(q.Text);
