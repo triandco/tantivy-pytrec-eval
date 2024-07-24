@@ -1,0 +1,4 @@
+certifi==2024.7.4
+elastic-transport==8.13.1
+elasticsearch==8.14.0
+urllib3==2.2.2

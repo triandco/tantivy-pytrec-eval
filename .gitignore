@@ -1,4 +1,6 @@
 data/**/*
 tantivy-retrieval/target
+elasticsearch-retrieval/.venv
+elasticsearch-retrieval/elasticsearch
 evaluation/.venv
 Cargo.lock
