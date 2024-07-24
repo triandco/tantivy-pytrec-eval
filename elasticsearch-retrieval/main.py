@@ -53,7 +53,7 @@ def main():
 
     elastic_search = ElasticSearch(
         ['https://localhost:9200'],
-        basic_auth=('elastic', 'TpOVaMXdOntY7LNIoRUz'),
+        basic_auth=('elastic', '<update_me>'),
         ssl_context=create_default_context(cafile=script_dir+"/elasticsearch/config/certs/http_ca.crt")
     )
 
