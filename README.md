@@ -1,5 +1,5 @@
 # Introduction
-This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy), [Elastic Search](https://github.com/elastic/elasticsearch) and [Apache Lucene](https://github.com/apache/lucene) retrieval quality using standard ndcg@10 metric.
+This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy), [Elastic Search](https://github.com/elastic/elasticsearch) and [Apache Lucene](https://github.com/apache/lucene) retrieval quality using [NDCG](https://en.wikipedia.org/wiki/Discounted_cumulative_gain).
 
 This project is based on [Beir](https://github.com/beir-cellar/beir). Index and retrieval task is performed by Tantivy and Lucene in their respective Tust and Java environment. 
 
@@ -9,8 +9,8 @@ Retrieval results are exported as tsv file which are then scored with [pytrec_ev
 
 Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
-# Results
-| Dataset | Tantivy ndcg@10 | Apache Lucene ndcg@10 | [Beir BM25 Flat ndcg@10]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search |
+# NDCG@10 results
+| Dataset | Tantivy | Apache Lucene | [Beir BM25 Flat]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search |
 | - | - | - | - | - |
 | Scifact | 0.6110550406527024 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
 | NFCorpus | 0.20174488628325865 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
@@ -19,12 +19,10 @@ Evaluation datasets are available on [Beir github](https://github.com/beir-cella
 
 # Running evaluation
 ## 1. Prerequiste
-This project is built in a linux container as [pytrec_eval is not playing nicely with pip on windows](https://github.com/cvangysel/pytrec_eval/issues/32). If you prefer to run it on your local environment, make sure you have:
-* Python 3.9
-* cargo lastest
-* Java latest with OpenJDK and gradle
-
-## 2. Running tantivy retrieval task
+1. This project is built in a linux container as [pytrec_eval is not playing nicely with pip on windows](https://github.com/cvangysel/pytrec_eval/issues/32). If you prefer to run it on your local environment, make sure you have:
+    * Python 3.9
+    * cargo lastest
+    * Java latest with OpenJDK and gradle
 1. Download and unzip a [dataset](https://github.com/beir-cellar/beir) into ```.\data``` folder. For instance, if you choose the Scifact dataset your folder should look like
 ```
 data
@@ -35,6 +33,9 @@ data
             test.tsv
             dev.tsv
 ```
+
+## 2. Running tantivy retrieval task
+
 1. Run the following step to generate result for tantivy retrieval task. For instance, we are running retrieval for scifact corpus
 ```sh
 cd tantivy-retrieval
