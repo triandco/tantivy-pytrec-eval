@@ -16,7 +16,7 @@ Retrieval results are exported as tsv file which are then scored with [pytrec_ev
 Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
 # NDCG@10 results
-| Dataset | Tantivy multifield | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Flat]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search disjunction max |
+| Dataset | Tantivy multifield | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Flat]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search default |
 | - | - | - | - | - | - |
 | Scifact | 0.6110550406527024 | 0.6518504567299743 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
 | NFCorpus | 0.20174488628325865 | 0.21048722765891772 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
