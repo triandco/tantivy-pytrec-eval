@@ -1,6 +1,8 @@
+mod disjunction_max_query_parser;
 mod types;
 
 use crate::types::LoadError;
+use disjunction_max_query_parser::DisjunctionMaxQueryParser;
 use serde_json;
 use std::{
     env,
@@ -66,9 +68,7 @@ fn index_corpus(tantivy_index: &Index, corpus: Corpus) {
         let title_field = schema
             .get_field("title")
             .expect("Failed to get title field");
-        let text_field = schema
-            .get_field("text")
-            .expect("Failed to get text field");
+        let text_field = schema.get_field("text").expect("Failed to get text field");
 
         let mut document = TantivyDocument::default();
         document.add_text(id_field, &corpus_item.id);
@@ -104,17 +104,15 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult> 
 
     let searcher = reader.searcher();
     let schema = tantivy_index.schema();
-    let query_parser = QueryParser::for_index(
-        &tantivy_index,
-        vec![schema
-            .get_field("title")
-            .expect("Get title field failed"),
-            schema
-            .get_field("text")
-            .expect("Get text field failed")],
-    );
 
     let id_field = schema.get_field("id").expect("Fail to get id field");
+    let query_parser = QueryParser::for_index(
+        &tantivy_index,
+        vec![
+            schema.get_field("title").expect("Get title field failed"),
+            schema.get_field("text").expect("Get text field failed"),
+        ],
+    );
 
     queries
         .into_iter()
@@ -122,7 +120,49 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult> 
             let sanitised_query = santise_query(query.text);
             let tantivy_query = query_parser
                 .parse_query(&sanitised_query)
-                .expect("Failed to parse query");
+                .expect("Fail to parse query");
+            searcher
+                .search(&tantivy_query, &TopDocs::with_limit(10))
+                .expect("Failed to search")
+                .into_iter()
+                .map(|(score, doc_address)| {
+                    let tantivy_doc = searcher
+                        .doc::<TantivyDocument>(doc_address)
+                        .expect("Failed to get doc by address");
+                    RetrievalResult {
+                        qid: query.id.clone(),
+                        doc: tantivy_doc
+                            .get_all(id_field)
+                            .map(|value| value.as_str())
+                            .filter(Option::is_some)
+                            .map(Option::unwrap)
+                            .fold(String::new(), |state, next| state + next),
+                        score,
+                    }
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>()
+}
+
+fn retrieve_dismax(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult> {
+    let reader = tantivy_index
+        .reader_builder()
+        .reload_policy(ReloadPolicy::OnCommitWithDelay)
+        .try_into()
+        .expect("Failed to create tantivy reader");
+
+    let searcher = reader.searcher();
+    let schema = tantivy_index.schema();
+
+    let id_field = schema.get_field("id").expect("Fail to get id field");
+    let query_parser = DisjunctionMaxQueryParser::new(&tantivy_index, vec!["title", "text"])
+        .expect("Fail to create query parser");
+
+    queries
+        .into_iter()
+        .flat_map(|query| {
+            let tantivy_query = query_parser.parse(&query.text);
             searcher
                 .search(&tantivy_query, &TopDocs::with_limit(10))
                 .expect("Failed to search")
@@ -154,7 +194,12 @@ fn main() -> () {
     let dataset_path = dataset_path.join(Path::new(&args[1]));
     let corpus_path = dataset_path.join(Path::new("corpus.jsonl"));
     let queries_path = dataset_path.join(Path::new("queries.jsonl"));
-    let result_path = dataset_path.join(Path::new("result_tantivy.tsv"));
+
+    let result_path = if args.len() == 2 && args[2] == "dismax" {
+        dataset_path.join(Path::new("result_tantivy_dismax.tsv"))
+    } else {
+        dataset_path.join(Path::new("result_tantivy.tsv"))
+    };
     let corpus = load_jsonl_corpus(corpus_path.as_path()).expect(&format!(
         "Failed to load corpus at {}",
         corpus_path.to_str().unwrap()
@@ -171,7 +216,11 @@ fn main() -> () {
 
     index_corpus(&tantivy_index, corpus);
 
-    let retrieval_result = retrieve(&tantivy_index, queries);
+    let retrieval_result = if args.len() == 2 && args[2] == "dismax" {
+        retrieve_dismax(&tantivy_index, queries)
+    } else {
+        retrieve(&tantivy_index, queries)
+    };
 
     write_result_tsv(&result_path, retrieval_result)
 }

@@ -3,19 +3,25 @@ This project evaluates [Tantivy](https://github.com/quickwit-oss/tantivy), [Elas
 
 This project is based on [Beir](https://github.com/beir-cellar/beir). Index and retrieval task is performed by Tantivy and Lucene in their respective Tust and Java environment. 
 
-For all candidate, we use the default settings for Tokenisation and BM25 settings. We use the default QueryParser for both Lucene and Tantivy which require query sanitisation since queries in multiple dataset contains special characters. Our sanitisation method was the removal of special character for each implementation. Meanwhile, for ElasticSearch, we use non-sanitised query string with a "type='best_field'" settings.
+## Retrieval task configuration
+| Name | Engine | Tokeniser | BM25 settings | Query style |
+| - | - | - | - | - |
+| Tantivy default | Tantivy | Default | Default (K1=1.2, B=0.75) | Multifiled |
+| Tantivy disjunction max | Tantivy | Default | Default (K1=1.2, B=0.75) | Disjunction max |
+| Apache Lucene default | Apache lucene | Default | Default(K1=1.2, B=0.75) | Multifield |
+| Elastic Search default | Elastic search | Default | Default(K1=1.2, B=0.75) | Disjunction max |
 
 Retrieval results are exported as tsv file which are then scored with [pytrec_eval](https://github.com/cvangysel/pytrec_eval). This approach allows us to manually examine search output and ensure each engine's performance is scored by the same code base.
 
 Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
 # NDCG@10 results
-| Dataset | Tantivy | Apache Lucene | [Beir BM25 Flat]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search |
-| - | - | - | - | - |
-| Scifact | 0.6110550406527024 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
-| NFCorpus | 0.20174488628325865 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
-| TREC-COVID | 0.03640657024103224 | 0.03705072222267741 | 0.595 | 0.05433894833185797 |
-| NQ | 0.30181710921729077 | 0.301753090384626 | 0.306 | 0.310128528137924 |
+| Dataset | Tantivy multifield | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Flat]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search disjunction max |
+| - | - | - | - | - | - |
+| Scifact | 0.6110550406527024 | 0.6518504567299743 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
+| NFCorpus | 0.20174488628325865 | 0.21048722765891772 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
+| TREC-COVID | 0.03640657024103224 | 0.04495782186916706 | 0.03705072222267741 | 0.595 | 0.05433894833185797 |
+| NQ | 0.30181710921729077 | 0.24489390409423747 | 0.301753090384626 | 0.306 | 0.310128528137924 |
 
 # Running evaluation
 ## 1. Prerequiste
@@ -42,6 +48,14 @@ cd tantivy-retrieval
 cargo update
 cargo run -- scifact
 ```
+
+For retrieval task using disjunction max query
+```sh
+cd tantivy-retrieval
+cargo update
+cargo run -- scifact dismax
+```
+
 1. If ran successfully, a new file called ```result_tantivy.tsv``` will be created in the dataset folder
 
 ## 3. Runing lucene retrieval task
