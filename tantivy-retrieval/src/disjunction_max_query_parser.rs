@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
 use tantivy::{
-    query::{BooleanQuery, DisjunctionMaxQuery, Query},
-    schema::Field,
-    tokenizer::TextAnalyzer,
-    Index, TantivyError, Term,
+    query::{BooleanQuery, DisjunctionMaxQuery, Query}, schema::Field, tokenizer::TextAnalyzer, Index, Score, TantivyError, Term
 };
 
 pub struct DisjunctionMaxQueryParser {
@@ -31,7 +28,7 @@ impl DisjunctionMaxQueryParser {
         })
     }
 
-    pub fn parse(&self, query: &str) -> DisjunctionMaxQuery {
+    pub fn parse(&self, query: &str, tie_breaker: f32) -> DisjunctionMaxQuery {
         let field_query = self
             .text_analyzer
             .clone()
@@ -47,6 +44,6 @@ impl DisjunctionMaxQueryParser {
             })
             .collect::<Vec<_>>();
 
-        DisjunctionMaxQuery::new(field_query)
+        DisjunctionMaxQuery::with_tie_breaker(field_query, tie_breaker)
     }
 }

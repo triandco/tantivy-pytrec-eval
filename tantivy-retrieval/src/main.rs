@@ -162,7 +162,7 @@ fn retrieve_dismax(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalR
     queries
         .into_iter()
         .flat_map(|query| {
-            let tantivy_query = query_parser.parse(&query.text);
+            let tantivy_query = query_parser.parse(&query.text, 0.5);
             searcher
                 .search(&tantivy_query, &TopDocs::with_limit(10))
                 .expect("Failed to search")
@@ -194,8 +194,7 @@ fn main() -> () {
     let dataset_path = dataset_path.join(Path::new(&args[1]));
     let corpus_path = dataset_path.join(Path::new("corpus.jsonl"));
     let queries_path = dataset_path.join(Path::new("queries.jsonl"));
-
-    let result_path = if args.len() == 2 && args[2] == "dismax" {
+    let result_path = if args.len() == 3 && args[2] == "dismax" {
         dataset_path.join(Path::new("result_tantivy_dismax.tsv"))
     } else {
         dataset_path.join(Path::new("result_tantivy.tsv"))
@@ -216,7 +215,7 @@ fn main() -> () {
 
     index_corpus(&tantivy_index, corpus);
 
-    let retrieval_result = if args.len() == 2 && args[2] == "dismax" {
+    let retrieval_result = if args.len() == 3 && args[2] == "dismax" {
         retrieve_dismax(&tantivy_index, queries)
     } else {
         retrieve(&tantivy_index, queries)

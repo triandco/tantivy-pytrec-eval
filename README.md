@@ -7,21 +7,21 @@ This project is based on [Beir](https://github.com/beir-cellar/beir). Index and 
 | Name | Engine | Tokeniser | BM25 settings | Query style |
 | - | - | - | - | - |
 | Tantivy default | Tantivy | Default | Default (K1=1.2, B=0.75) | Multifiled |
-| Tantivy disjunction max | Tantivy | Default | Default (K1=1.2, B=0.75) | Disjunction max |
+| Tantivy disjunction max | Tantivy | Default | Default (K1=1.2, B=0.75) | Disjunction max (tie_breaker=0.5) |
 | Apache Lucene default | Apache lucene | Default | Default(K1=1.2, B=0.75) | Multifield |
-| Elastic Search default | Elastic search | Default | Default(K1=1.2, B=0.75) | Disjunction max |
+| Elastic Search default | Elastic search | Default | Default(K1=1.2, B=0.75) | Disjunction max(tie_breaker=0.5) |
 
 Retrieval results are exported as tsv file which are then scored with [pytrec_eval](https://github.com/cvangysel/pytrec_eval). This approach allows us to manually examine search output and ensure each engine's performance is scored by the same code base.
 
 Evaluation datasets are available on [Beir github](https://github.com/beir-cellar/beir).
 
 # NDCG@10 results
-| Dataset | Tantivy multifield | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Flat]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search default |
+| Dataset | Tantivy multifield | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Multifield]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search 8.12.0 default |
 | - | - | - | - | - | - |
-| Scifact | 0.6110550406527024 | 0.6518504567299743 | 0.6105774540257333 | 0.679 | 0.6563018879997284 |
-| NFCorpus | 0.20174488628325865 | 0.21048722765891772 | 0.2021653197430468 | 0.322 | 0.2116375800036891 |
-| TREC-COVID | 0.03640657024103224 | 0.04495782186916706 | 0.03705072222267741 | 0.595 | 0.05433894833185797 |
-| NQ | 0.30181710921729077 | 0.24489390409423747 | 0.301753090384626 | 0.306 | 0.310128528137924 |
+| Scifact | 0.6110550406527024 | 0.654233767896255 | 0.6105774540257333 | 0.665 | 0.6563018879997284 |
+| NFCorpus | 0.20174488628325865 | 0.21110529039042258 | 0.2021653197430468 | 0.325 | 0.2116375800036891 |
+| TREC-COVID | 0.03640657024103224 | 0.0563933542622642 | 0.03705072222267741 | 0.656 | 0.05433894833185797 |
+| NQ | 0.30181710921729077 | 0.31352168800520985 | 0.301753090384626 | 0.329 | 0.310128528137924 |
 
 # Running evaluation
 ## 1. Prerequiste
