@@ -53,7 +53,7 @@ def main():
 
     elastic_search = ElasticSearch(
         ['https://localhost:9200'],
-        basic_auth=('elastic', '<update_me>'),
+        basic_auth=('elastic', 'TpOVaMXdOntY7LNIoRUz'),
         ssl_context=create_default_context(cafile=script_dir+"/elasticsearch/config/certs/http_ca.crt")
     )
 
@@ -99,7 +99,7 @@ def search(es: ElasticSearch, index_name: str, queries: list[DatasetQuery]) -> l
                 "fields": ["text", "title"],
                 "tie_breaker": 0.5
                 }},
-                "size": 10}
+                "size": 1000}
         
         results = es.search(
             index = index_name, 
@@ -121,8 +121,8 @@ def index(es: ElasticSearch, index_name: str, corpus: list[CorpusItem]):
     mapping = {
         "mappings" : {
             "properties" : {
-                "title": {"type": "text"},
-                "text": {"type": "text"}
+                "title": {"type": "text", "analyzer": "english"},
+                "text": {"type": "text", "analyzer": "english"}
             }}}
     
     es.indices.create(index=index_name, body=mapping)

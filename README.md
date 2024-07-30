@@ -18,10 +18,10 @@ Evaluation datasets are available on [Beir github](https://github.com/beir-cella
 # NDCG@10 results
 | Dataset | Tantivy multifield | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Multifield]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search 8.12.0 default |
 | - | - | - | - | - | - |
-| Scifact | 0.6110550406527024 | 0.654233767896255 | 0.6105774540257333 | 0.665 | 0.6563018879997284 |
-| NFCorpus | 0.20174488628325865 | 0.21110529039042258 | 0.2021653197430468 | 0.325 | 0.2116375800036891 |
-| TREC-COVID | 0.03640657024103224 | 0.0563933542622642 | 0.03705072222267741 | 0.656 | 0.05433894833185797 |
-| NQ | 0.30181710921729077 | 0.31352168800520985 | 0.301753090384626 | 0.329 | 0.310128528137924 |
+| Scifact | 0.6110550406527024 | 0.654233767896255 | 0.6105774540257333 | 0.665 | 0.690638173453613 |
+| NFCorpus | 0.20174488628325865 | 0.21110529039042258 | 0.2021653197430468 | 0.325 | 0.34281013102961966 |
+| TREC-COVID | 0.03640657024103224 | 0.0563933542622642 | 0.03705072222267741 | 0.656 | 0.6880298232606303 |
+| NQ | 0.30181710921729077 | 0.31352168800520985 | 0.301753090384626 | 0.329 | 0.3260731485135678 |
 
 # Running evaluation
 ## 1. Prerequiste
@@ -29,7 +29,7 @@ Evaluation datasets are available on [Beir github](https://github.com/beir-cella
     * Python 3.9
     * cargo lastest
     * Java latest with OpenJDK and gradle
-1. Download and unzip a [dataset](https://github.com/beir-cellar/beir) into ```.\data``` folder. For instance, if you choose the Scifact dataset your folder should look like
+1. Download and unzip a [dataset](https://github.com/beir-cellar/beir) into ```.\data``` folder. For instance, if ydou choose the Scifact dataset your folder should look like
 ```
 data
     scifact

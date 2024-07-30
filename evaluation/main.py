@@ -43,7 +43,7 @@ def main():
     result = load_result('../data/'+args[0]+'/result_'+args[1]+'.tsv') 
 
     evaluator = pytrec_eval.RelevanceEvaluator(
-        qrel, {'map', 'ndcg', 'recall', 'P'})
+        qrel, {'map', 'ndcg_cut.1,3,5,10,100,1000', 'recall', 'P'})
 
     evaluation_result = evaluator.evaluate(result)
 
