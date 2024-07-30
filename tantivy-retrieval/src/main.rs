@@ -11,10 +11,7 @@ use std::{
     path::Path,
 };
 use tantivy::{
-    collector::TopDocs,
-    query::QueryParser,
-    schema::{Schema, Value, STORED, TEXT},
-    Index, ReloadPolicy, TantivyDocument,
+    collector::TopDocs, query::QueryParser, schema::{IndexRecordOption, NamedFieldDocument, Schema, TextFieldIndexing, TextOptions, Value, STORED, TEXT}, tokenizer::{Language, LowerCaser, RemoveLongFilter, SimpleTokenizer, Stemmer, StopWordFilter, TextAnalyzer}, Index, ReloadPolicy, TantivyDocument
 };
 use types::{Corpus, CorpusItem, Query, RetrievalResult};
 
@@ -59,6 +56,7 @@ fn write_result_tsv(path: &Path, result: Vec<RetrievalResult>) {
 fn index_corpus(tantivy_index: &Index, corpus: Corpus) {
     let mut index_writer = tantivy_index
         .writer(50_000_000)
+        
         .expect("Create index writer failed");
 
     let schema = tantivy_index.schema();
@@ -122,7 +120,7 @@ fn retrieve(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalResult> 
                 .parse_query(&sanitised_query)
                 .expect("Fail to parse query");
             searcher
-                .search(&tantivy_query, &TopDocs::with_limit(10))
+                .search(&tantivy_query, &TopDocs::with_limit(1000))
                 .expect("Failed to search")
                 .into_iter()
                 .map(|(score, doc_address)| {
@@ -164,7 +162,7 @@ fn retrieve_dismax(tantivy_index: &Index, queries: Vec<Query>) -> Vec<RetrievalR
         .flat_map(|query| {
             let tantivy_query = query_parser.parse(&query.text, 0.5);
             searcher
-                .search(&tantivy_query, &TopDocs::with_limit(10))
+                .search(&tantivy_query, &TopDocs::with_limit(1000))
                 .expect("Failed to search")
                 .into_iter()
                 .map(|(score, doc_address)| {
@@ -194,24 +192,52 @@ fn main() -> () {
     let dataset_path = dataset_path.join(Path::new(&args[1]));
     let corpus_path = dataset_path.join(Path::new("corpus.jsonl"));
     let queries_path = dataset_path.join(Path::new("queries.jsonl"));
-    let result_path = if args.len() == 3 && args[2] == "dismax" {
+    let result_path = if args.len() >= 3 && args[2] == "dismax" {
         dataset_path.join(Path::new("result_tantivy_dismax.tsv"))
     } else {
         dataset_path.join(Path::new("result_tantivy.tsv"))
     };
+
     let corpus = load_jsonl_corpus(corpus_path.as_path()).expect(&format!(
         "Failed to load corpus at {}",
         corpus_path.to_str().unwrap()
     ));
     let queries = load_jsonl_queries(queries_path.as_path()).expect("Failed to load queries");
-
+    
     let mut schema_builder = Schema::builder();
+    let custom_tokenizer_name = "english-stem-stop";
+
+    let use_custom_tokenizer = args.len() >= 4 && args[2] == "custom-tokenizer";
+
+    
     schema_builder.add_text_field("id", TEXT | STORED);
-    schema_builder.add_text_field("title", TEXT);
-    schema_builder.add_text_field("text", TEXT);
+    
+    if use_custom_tokenizer {
+        let text_options = TextOptions::default()
+            .set_indexing_options(TextFieldIndexing::default().set_tokenizer(custom_tokenizer_name).set_index_option(IndexRecordOption::WithFreqsAndPositions))
+            .set_stored();
+        schema_builder.add_text_field("title", text_options.clone());
+        schema_builder.add_text_field("text", text_options);
+    }else {
+        schema_builder.add_text_field("title", TEXT);
+        schema_builder.add_text_field("text", TEXT);
+    }
+
     let schema = schema_builder.build();
     let tantivy_index =
         tantivy::Index::create_from_tempdir(schema.clone()).expect("Create index failed");
+
+    if use_custom_tokenizer {
+        let custom_tokenizer = TextAnalyzer::builder(SimpleTokenizer::default())
+            .filter(RemoveLongFilter::limit(40))
+            .filter(LowerCaser)
+            .filter(Stemmer::new(Language::English))
+            .filter(StopWordFilter::new(Language::English).expect("Fail to create stop word filter"))
+            .build();
+
+        tantivy_index.tokenizers()
+            .register(custom_tokenizer_name, custom_tokenizer);
+    }
 
     index_corpus(&tantivy_index, corpus);
 
