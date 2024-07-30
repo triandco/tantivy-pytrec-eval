@@ -99,7 +99,7 @@ public class App {
                 try {
                     var sanitisedQuery = SanitiseQuery(q.Text);
                     var luceneQuery = parser.parse(sanitisedQuery);
-                    var docs = searcher.search(luceneQuery, 10, Sort.RELEVANCE, true);
+                    var docs = searcher.search(luceneQuery, 1000, Sort.RELEVANCE, true);
                     for (var scoreDoc: docs.scoreDocs){
                         var queryResult = new QueryResult();
                         queryResult.QueryId = q.Id;
