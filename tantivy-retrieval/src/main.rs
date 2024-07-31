@@ -192,12 +192,8 @@ fn main() -> () {
     let dataset_path = dataset_path.join(Path::new(&args[1]));
     let corpus_path = dataset_path.join(Path::new("corpus.jsonl"));
     let queries_path = dataset_path.join(Path::new("queries.jsonl"));
-    let result_path = if args.len() >= 3 && args[2] == "dismax" {
-        dataset_path.join(Path::new("result_tantivy_dismax.tsv"))
-    } else {
-        dataset_path.join(Path::new("result_tantivy.tsv"))
-    };
-
+    let result_path = dataset_path.join(Path::new("result_tantivy.tsv"));
+ 
     let corpus = load_jsonl_corpus(corpus_path.as_path()).expect(&format!(
         "Failed to load corpus at {}",
         corpus_path.to_str().unwrap()
@@ -205,14 +201,14 @@ fn main() -> () {
     let queries = load_jsonl_queries(queries_path.as_path()).expect("Failed to load queries");
     
     let mut schema_builder = Schema::builder();
+    
     let custom_tokenizer_name = "english-stem-stop";
-
-    let use_custom_tokenizer = args.len() >= 4 && args[2] == "custom-tokenizer";
-
+    let use_custom_tokenizer = args.len() >= 4 && args[3] == "custom-tokeniser";
     
     schema_builder.add_text_field("id", TEXT | STORED);
     
     if use_custom_tokenizer {
+        println!("Using custom tokeniser");
         let text_options = TextOptions::default()
             .set_indexing_options(TextFieldIndexing::default().set_tokenizer(custom_tokenizer_name).set_index_option(IndexRecordOption::WithFreqsAndPositions))
             .set_stored();
@@ -241,9 +237,11 @@ fn main() -> () {
 
     index_corpus(&tantivy_index, corpus);
 
-    let retrieval_result = if args.len() == 3 && args[2] == "dismax" {
+    let retrieval_result = if args.len() >= 3 && args[2] == "dismax" {
+        println!("Retrieve with dismax");
         retrieve_dismax(&tantivy_index, queries)
     } else {
+        println!("Retrieve using standard");
         retrieve(&tantivy_index, queries)
     };
 

@@ -8,7 +8,7 @@ This project is based on [Beir](https://github.com/beir-cellar/beir). Index and 
 | - | - | - | - | - |
 | Tantivy default | Tantivy | Default | Default (K1=1.2, B=0.75) | Multifiled |
 | Tantivy english | Tantivy | English Stem and stopword | Default (K1=1.2, B=0.75) | Multifiled |
-| Tantivy disjunction max | Tantivy | Default | Default (K1=1.2, B=0.75) | Disjunction max (tie_breaker=0.5) |
+| Tantivy disjunction max | Tantivy | English Stem and stopword | Default (K1=1.2, B=0.75) | Disjunction max (tie_breaker=0.5) |
 | Apache Lucene default | Apache lucene | Default | Default(K1=1.2, B=0.75) | Multifield |
 | Elastic Search default | Elastic search | Default | Default(K1=1.2, B=0.75) | Disjunction max(tie_breaker=0.5) |
 
@@ -19,10 +19,10 @@ Evaluation datasets are available on [Beir github](https://github.com/beir-cella
 # NDCG@10 results
 | Dataset | Tantivy default | Tantivy English | Tantivy disjunction max | Apache Lucene default | [Beir BM25 Multifield]((https://eval.ai/web/challenges/challenge-page/1897/leaderboard/4475)) | Elastic Search 8.12.0 default |
 | - | - | - | - | - | - | - |
-| Scifact | 0.6110550406527024 | 0.6466632511040359 | 0.654233767896255 | 0.6105774540257333 | 0.665 | 0.690638173453613 |
-| NFCorpus | 0.31783463374400994 | 0.32944073593202805 | 0.21110529039042258 | 0.31788159965582696 | 0.325 | 0.34281013102961966 |
-| TREC-COVID | 0.42327118043942563 | 0.41898217050240794 | 0.0563933542622642 | 0.42438665909618467 | 0.656 | 0.6880298232606303 |
-| NQ | 0.30181710921729077 | 0.3132771880207455 | 0.31352168800520985 | 0.30170174644291564 | 0.329 | 0.3260731485135678 |
+| Scifact | 0.6110550406527024 | 0.6466632511040359 | 0.6905108331112109 | 0.6105774540257333 | 0.665 | 0.690638173453613 |
+| NFCorpus | 0.31783463374400994 | 0.32944073593202805 | 0.3429044899000987 | 0.31788159965582696 | 0.325 | 0.34281013102961966 |
+| TREC-COVID | 0.42327118043942563 | 0.41898217050240794 | 0.6796090083796931 | 0.42438665909618467 | 0.656 | 0.6880298232606303 |
+| NQ | 0.30181710921729077 | 0.3132771880207455 | 0.32453876742895865 | 0.30170174644291564 | 0.329 | 0.3260731485135678 |
 
 # Running evaluation
 ## 1. Prerequiste
